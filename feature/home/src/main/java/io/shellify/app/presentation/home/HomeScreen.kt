@@ -8,9 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +38,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VpnLock
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.MusicNote
@@ -55,7 +51,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.GTranslate
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -145,8 +140,6 @@ import io.shellify.app.presentation.webview.WebViewActivity
 fun HomeScreen(
     viewModel: HomeViewModel,
     geckoInstalled: Boolean,
-    currentLanguage: String,
-    onLanguageChange: (String) -> Unit,
     onAddApp: () -> Unit,
     onEditApp: (Long) -> Unit,
     onOpenApp: (WebApp) -> Unit,
@@ -156,14 +149,11 @@ fun HomeScreen(
     val context = LocalContext.current
     var hideDetails by remember { mutableStateOf(false) }
     var isGridView by remember { mutableStateOf(true) }
-    var searchFocused by remember { mutableStateOf(false) }
-    var showLanguagePicker by remember { mutableStateOf(false) }
-    var showDeleteAllAppsDialog by remember { mutableStateOf(false) }
+    var isSearchOpen by remember { mutableStateOf(false) }
 
     val showDetailsCd = stringResource(R.string.home_show_details_cd)
     val hideDetailsCd = stringResource(R.string.home_hide_details_cd)
-    val addFabCd = stringResource(R.string.home_add_fab_cd)
-    val languageChangeCd = stringResource(R.string.language_change_cd)
+    val focusManager = LocalFocusManager.current
 
     val screenBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.04f)
     Scaffold(
@@ -171,40 +161,98 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(Dimens.sizeLg)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.ic_app_logo_fg),
-                                contentDescription = null,
-                                modifier = Modifier.requiredSize(Dimens.size3xl),
+                    if (isSearchOpen && state.hasAnyApps) {
+                        BasicTextField(
+                            value = state.searchQuery,
+                            onValueChange = viewModel::setSearch,
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = Dimens.textSizeBody,
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                            decorationBox = { innerTextField ->
+                                Box {
+                                    if (state.searchQuery.isEmpty()) {
+                                        Text(
+                                            stringResource(R.string.home_search_hint),
+                                            fontSize = Dimens.textSizeBody,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                    innerTextField()
+                                }
+                            },
+                        )
+                    } else {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(Dimens.sizeLg)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.ic_app_logo_fg),
+                                    contentDescription = null,
+                                    modifier = Modifier.requiredSize(Dimens.size3xl),
+                                )
+                            }
+                            Spacer(Modifier.width(Dimens.spaceXs))
+                            Text(
+                                text = if (state.appCount > 0) {
+                                    stringResource(R.string.home_title_with_count, state.appCount)
+                                } else {
+                                    stringResource(R.string.home_title)
+                                },
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
-                        Spacer(Modifier.width(Dimens.spaceXs))
-                        Text(
-                            text = stringResource(R.string.home_title),
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold,
-                        )
                     }
                 },
                 actions = {
                     if (state.hasAnyApps) {
-                        IconButton(onClick = { showDeleteAllAppsDialog = true }) {
-                            Icon(
-                                Icons.Default.DeleteSweep,
-                                contentDescription = stringResource(R.string.home_delete_all_apps_cd),
-                                tint = MaterialTheme.colorScheme.error,
-                            )
+                        if (isSearchOpen) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.setSearch("")
+                                    isSearchOpen = false
+                                    focusManager.clearFocus()
+                                },
+                            ) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.home_close_search_cd),
+                                )
+                            }
+                        } else {
+                            IconButton(onClick = { isSearchOpen = true }) {
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = stringResource(R.string.home_search_cd),
+                                )
+                            }
+                            IconButton(onClick = { hideDetails = !hideDetails }) {
+                                Icon(
+                                    if (hideDetails) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (hideDetails) showDetailsCd else hideDetailsCd,
+                                )
+                            }
+                            IconButton(onClick = { isGridView = !isGridView }) {
+                                Icon(
+                                    if (isGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
+                                    contentDescription = if (isGridView) {
+                                        stringResource(R.string.home_list_view_cd)
+                                    } else {
+                                        stringResource(R.string.home_grid_view_cd)
+                                    },
+                                )
+                            }
                         }
-                    }
-                    IconButton(onClick = { showLanguagePicker = true }) {
-                        Icon(Icons.Default.Language, contentDescription = languageChangeCd)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -226,112 +274,7 @@ fun HomeScreen(
             }
         },
     ) { padding ->
-        if (showLanguagePicker) {
-            LanguagePickerDialog(
-                currentLanguage = currentLanguage,
-                onDismiss = { showLanguagePicker = false },
-                onSelect = { code ->
-                    showLanguagePicker = false
-                    onLanguageChange(code)
-                },
-            )
-        }
-
-        val focusManager = LocalFocusManager.current
-
         Column(modifier = Modifier.padding(padding)) {
-
-            // Search bar + view controls
-            if (state.hasAnyApps) Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = Dimens.spaceLg, end = Dimens.spaceMd, top = Dimens.spaceMd),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                BasicTextField(
-                    value = state.searchQuery,
-                    onValueChange = viewModel::setSearch,
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = Dimens.textSizeBody,
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(Dimens.sizeApp)
-                        .onFocusChanged { searchFocused = it.isFocused },
-                    decorationBox = { innerTextField ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    MaterialTheme.colorScheme.surfaceVariant,
-                                    RoundedCornerShape(Dimens.cornerFull)
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Spacer(Modifier.width(Dimens.spaceMd))
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(Dimens.sizeXs),
-                            )
-                            Spacer(Modifier.width(Dimens.spaceSm))
-                            Box(modifier = Modifier.weight(1f)) {
-                                if (state.searchQuery.isEmpty()) {
-                                    Text(
-                                        stringResource(R.string.home_search_hint),
-                                        fontSize = Dimens.textSizeBody,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                                innerTextField()
-                            }
-                            if (searchFocused || state.searchQuery.isNotEmpty()) {
-                                IconButton(
-                                    onClick = {
-                                        viewModel.setSearch("")
-                                        focusManager.clearFocus()
-                                    },
-                                    modifier = Modifier.size(Dimens.sizeApp),
-                                ) {
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(Dimens.sizeXs)
-                                    )
-                                }
-                            } else {
-                                Spacer(Modifier.width(Dimens.spaceMd))
-                            }
-                        }
-                    },
-                )
-                if (state.apps.isNotEmpty() && !searchFocused) {
-                    Spacer(Modifier.width(Dimens.spaceXxs))
-                    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-                        IconButton(
-                            onClick = { hideDetails = !hideDetails },
-                            modifier = Modifier.size(Dimens.size4xl),
-                        ) {
-                            Icon(
-                                if (hideDetails) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (hideDetails) showDetailsCd else hideDetailsCd,
-                            )
-                        }
-                        IconButton(
-                            onClick = { isGridView = !isGridView },
-                            modifier = Modifier.size(Dimens.size4xl),
-                        ) {
-                            Icon(
-                                if (isGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
-                                contentDescription = null,
-                            )
-                        }
-                    }
-                }
-            }
 
             // Category filter chips
             if (state.categories.isNotEmpty() && state.hasAnyApps) {
@@ -466,87 +409,6 @@ fun HomeScreen(
 
     }
 
-    if (showDeleteAllAppsDialog) {
-        ConfirmDialog(
-            title = stringResource(R.string.home_delete_all_apps_confirm_title),
-            body = stringResource(R.string.home_delete_all_apps_confirm_body),
-            confirmLabel = stringResource(R.string.common_delete_all),
-            onConfirm = { showDeleteAllAppsDialog = false; viewModel.deleteAllApps() },
-            onDismiss = { showDeleteAllAppsDialog = false },
-            icon = Icons.Default.DeleteSweep,
-            isDestructive = true,
-        )
-    }
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun LanguagePickerDialog(
-    currentLanguage: String,
-    onDismiss: () -> Unit,
-    onSelect: (String) -> Unit,
-) {
-    data class LangOption(val code: String, val nativeName: String, val englishName: String)
-
-    val options = listOf(
-        LangOption("en", "English", "English"),
-        LangOption("fr", "Français", "French"),
-        LangOption("ar", "العربية", "Arabic"),
-    )
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Text(
-            stringResource(R.string.language_dialog_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(
-                start = Dimens.spaceLg,
-                end = Dimens.spaceLg,
-                bottom = Dimens.spaceSm
-            ),
-        )
-        Column(
-            modifier = Modifier.padding(horizontal = Dimens.spaceMd),
-            verticalArrangement = Arrangement.spacedBy(Dimens.spaceXxs),
-        ) {
-            options.forEach { lang ->
-                val isSelected = currentLanguage == lang.code
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(Dimens.cornerLg))
-                        .background(
-                            if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                        )
-                        .clickable { onSelect(lang.code) }
-                        .padding(horizontal = Dimens.spaceLg, vertical = Dimens.spaceMd),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            lang.nativeName,
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurface,
-                        )
-                        Text(
-                            lang.englishName,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer.copy(
-                                alpha = 0.7f
-                            )
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    RadioButton(selected = isSelected, onClick = { onSelect(lang.code) })
-                }
-            }
-        }
-        Spacer(Modifier.height(Dimens.spaceXl))
-    }
 }
 
 private sealed class HomeEmptyState {

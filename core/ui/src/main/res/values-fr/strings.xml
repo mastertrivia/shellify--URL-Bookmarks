@@ -24,11 +24,15 @@
     <string name="common_current_password">Mot de passe actuel</string>
     <string name="common_wrong_password">Mot de passe incorrect</string>
     <string name="home_title">Shellify</string>
+    <string name="home_title_with_count">Shellify-%d</string>
     <string name="home_loading">Chargement des applications</string>
     <string name="home_search_hint">Rechercher des applications…</string>
     <string name="home_show_details_cd">Afficher les détails</string>
     <string name="home_hide_details_cd">Masquer les détails</string>
     <string name="home_search_cd">Rechercher</string>
+    <string name="home_close_search_cd">Fermer la recherche</string>
+    <string name="home_grid_view_cd">Passer en vue grille</string>
+    <string name="home_list_view_cd">Passer en vue liste</string>
     <string name="home_add_fab_cd">Ajouter une PWA</string>
     <string name="home_add_fab_label">Nouvelle app</string>
     <string name="home_quick_suggestions">SUGGESTIONS RAPIDES</string>
@@ -174,6 +178,11 @@
     <string name="settings_delete_confirm_body">Ceci supprimera l\'application et toutes ses données stockées.</string>
     <string name="settings_confirm">Confirmer</string>
     <string name="global_settings_title">Paramètres</string>
+    <string name="global_settings_language">Langue</string>
+    <string name="global_settings_language_desc">Choisir la langue d\'affichage de Shellify</string>
+    <string name="global_settings_section_data">Données</string>
+    <string name="global_settings_delete_all_apps">Supprimer toutes les applications</string>
+    <string name="global_settings_delete_all_apps_desc">Supprimer définitivement chaque site enregistré et ses données de navigation</string>
     <string name="global_settings_section_appearance">Apparence</string>
     <string name="global_settings_theme_label">Thème</string>
     <string name="global_settings_theme_system">Système</string>
@@ -567,6 +576,9 @@
     <string name="home_delete_all_apps_cd">Supprimer toutes les applications</string>
     <string name="home_delete_all_apps_confirm_title">Supprimer toutes les applications ?</string>
     <string name="home_delete_all_apps_confirm_body">Toutes les applications et leurs données de navigation seront supprimées définitivement. Cette action est irréversible.</string>
+    <string name="home_delete_all_apps_confirm_code" translatable="false">A1B2C3D4</string>
+    <string name="home_delete_all_apps_confirm_label">Code de confirmation</string>
+    <string name="home_delete_all_apps_confirm_hint">Saisissez A1B2C3D4 pour activer Supprimer tout</string>
     <string name="categories_delete_all_cd">Supprimer toutes les catégories</string>
     <string name="categories_delete_all_confirm_title">Supprimer toutes les catégories ?</string>
     <string name="categories_delete_all_confirm_body">Toutes les catégories seront supprimées. Vos applications ne seront pas supprimées.</string>

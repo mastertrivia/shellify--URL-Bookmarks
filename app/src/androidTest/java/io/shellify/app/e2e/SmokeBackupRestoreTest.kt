@@ -1,10 +1,14 @@
 package io.shellify.app.e2e
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.shellify.app.core.backup.BackupCrypto
@@ -145,6 +149,53 @@ class SmokeBackupRestoreTest {
             .assertIsDisplayed()
     }
 
+    @Test
+    fun globalSettings_languageRow_isVisible() {
+        setScreen(GlobalSettingsUiState(isLoaded = true))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.global_settings_language))
+            .performScrollTo()
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun globalSettings_deleteAllHiddenWhenNoApps() {
+        setScreen(GlobalSettingsUiState(isLoaded = true, hasAnyApps = false))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.global_settings_delete_all_apps))
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun globalSettings_deleteAllTypedConfirmStartsDisabled() {
+        setScreen(GlobalSettingsUiState(isLoaded = true, hasAnyApps = true))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.global_settings_delete_all_apps))
+            .performScrollTo()
+            .performClick()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.home_delete_all_apps_confirm_title))
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.common_delete_all))
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun globalSettings_deleteAllTypedConfirmEnablesOnExactCode() {
+        setScreen(GlobalSettingsUiState(isLoaded = true, hasAnyApps = true))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.global_settings_delete_all_apps))
+            .performScrollTo()
+            .performClick()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.home_delete_all_apps_confirm_label))
+            .performTextInput(context.getString(CoreUiR.string.home_delete_all_apps_confirm_code))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.common_delete_all))
+            .assertIsEnabled()
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private fun setScreen(state: GlobalSettingsUiState) {
@@ -161,7 +212,13 @@ class SmokeBackupRestoreTest {
         every { vm.simpleIconsManager } returns iconsManager
 
         composeTestRule.setContent {
-            ShellifyTheme { GlobalSettingsScreen(viewModel = vm) }
+            ShellifyTheme {
+                GlobalSettingsScreen(
+                    viewModel = vm,
+                    currentLanguage = "en",
+                    onLanguageChange = {},
+                )
+            }
         }
     }
 }

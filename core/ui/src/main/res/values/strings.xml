@@ -31,11 +31,15 @@
 
     <!-- Home -->
     <string name="home_title">Shellify</string>
+    <string name="home_title_with_count">Shellify-%d</string>
     <string name="home_loading">Loading apps</string>
     <string name="home_search_hint">Search apps…</string>
     <string name="home_show_details_cd">Show details</string>
     <string name="home_hide_details_cd">Hide details</string>
     <string name="home_search_cd">Search</string>
+    <string name="home_close_search_cd">Close search</string>
+    <string name="home_grid_view_cd">Switch to grid view</string>
+    <string name="home_list_view_cd">Switch to list view</string>
     <string name="home_add_fab_cd">Add PWA</string>
     <string name="home_add_fab_label">New app</string>
     <string name="home_quick_suggestions">QUICK SUGGESTIONS</string>
@@ -59,6 +63,9 @@
     <string name="home_delete_all_apps_cd">Delete all apps</string>
     <string name="home_delete_all_apps_confirm_title">Delete all apps?</string>
     <string name="home_delete_all_apps_confirm_body">All apps and their browsing data will be permanently removed. This cannot be undone.</string>
+    <string name="home_delete_all_apps_confirm_code" translatable="false">A1B2C3D4</string>
+    <string name="home_delete_all_apps_confirm_label">Confirmation code</string>
+    <string name="home_delete_all_apps_confirm_hint">Type A1B2C3D4 to enable Delete All</string>
 
     <!-- Add / Edit -->
     <string name="add_title">Add PWA</string>
@@ -209,6 +216,11 @@
 
     <!-- Global Settings -->
     <string name="global_settings_title">Settings</string>
+    <string name="global_settings_language">Language</string>
+    <string name="global_settings_language_desc">Choose the display language for Shellify</string>
+    <string name="global_settings_section_data">Data</string>
+    <string name="global_settings_delete_all_apps">Delete all apps</string>
+    <string name="global_settings_delete_all_apps_desc">Permanently remove every saved website and its browsing data</string>
     <string name="global_settings_section_appearance">Appearance</string>
     <string name="global_settings_theme_label">Theme</string>
     <string name="global_settings_theme_system">System</string>

@@ -52,8 +52,6 @@ class HomeScreenTest {
                 HomeScreen(
                     viewModel = buildViewModel(uiState),
                     geckoInstalled = geckoInstalled,
-                    currentLanguage = "en",
-                    onLanguageChange = {},
                     onAddApp = {},
                     onEditApp = {},
                     onOpenApp = {},
@@ -117,11 +115,11 @@ class HomeScreenTest {
     }
 
     @Test
-    fun appList_showsSearchHintWhenAppsPresent() {
+    fun appList_showsSearchButtonWhenAppsPresent() {
         val apps = listOf(FakeData.webApp(id = 1L, name = "Some App"))
-        setHomeScreen(HomeUiState(apps = apps, hasAnyApps = true, isLoading = false))
+        setHomeScreen(HomeUiState(apps = apps, hasAnyApps = true, isLoading = false, appCount = 1))
         composeTestRule
-            .onNodeWithText(context.getString(CoreUiR.string.home_search_hint))
+            .onNodeWithContentDescription(context.getString(CoreUiR.string.home_search_cd))
             .assertIsDisplayed()
     }
 
@@ -173,11 +171,47 @@ class HomeScreenTest {
     }
 
     @Test
-    fun topBar_showsLanguageChangeButton() {
+    fun topBar_hidesSearchWhenNoApps() {
         setHomeScreen(HomeUiState(isLoading = false))
         composeTestRule
-            .onNodeWithContentDescription(context.getString(CoreUiR.string.language_change_cd))
+            .onNodeWithContentDescription(context.getString(CoreUiR.string.home_search_cd))
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun topBar_showsTitleWithCountWhenAppsPresent() {
+        val apps = listOf(FakeData.webApp(id = 1L, name = "Some App"))
+        setHomeScreen(HomeUiState(apps = apps, hasAnyApps = true, appCount = 1, isLoading = false))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.home_title_with_count, 1))
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun topBar_searchIconOpensInlineSearch() {
+        val apps = listOf(FakeData.webApp(id = 1L, name = "Some App"))
+        setHomeScreen(HomeUiState(apps = apps, hasAnyApps = true, appCount = 1, isLoading = false))
+        composeTestRule
+            .onNodeWithContentDescription(context.getString(CoreUiR.string.home_search_cd))
+            .performClick()
+        composeTestRule
+            .onNodeWithContentDescription(context.getString(CoreUiR.string.home_close_search_cd))
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.home_title_with_count, 1))
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun topBar_doesNotShowLanguageOrDeleteAll() {
+        val apps = listOf(FakeData.webApp(id = 1L, name = "Some App"))
+        setHomeScreen(HomeUiState(apps = apps, hasAnyApps = true, appCount = 1, isLoading = false))
+        composeTestRule
+            .onNodeWithContentDescription(context.getString(CoreUiR.string.home_delete_all_apps_cd))
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.global_settings_language))
+            .assertDoesNotExist()
     }
 
     // ─── Empty filtered category state ────────────────────────────────────────
@@ -238,8 +272,6 @@ class HomeScreenTest {
                 HomeScreen(
                     viewModel = vm,
                     geckoInstalled = true,
-                    currentLanguage = "en",
-                    onLanguageChange = {},
                     onAddApp = {},
                     onEditApp = {},
                     onOpenApp = {},

@@ -66,6 +66,8 @@ class GlobalSettingsScreenScreenshotTest {
             ShellifyTheme {
                 GlobalSettingsScreen(
                     viewModel = buildVm(GlobalSettingsUiState(isLoaded = false)),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -79,6 +81,8 @@ class GlobalSettingsScreenScreenshotTest {
             ShellifyTheme {
                 GlobalSettingsScreen(
                     viewModel = buildVm(GlobalSettingsUiState(isLoaded = true)),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -99,6 +103,8 @@ class GlobalSettingsScreenScreenshotTest {
                             screenshotProtection = true,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -119,6 +125,8 @@ class GlobalSettingsScreenScreenshotTest {
                             backupDirectoryUri = "content://com.android.externalstorage/tree/primary%3AShellify",
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -139,6 +147,8 @@ class GlobalSettingsScreenScreenshotTest {
                             geckoSafeBrowsing = false,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -158,6 +168,8 @@ class GlobalSettingsScreenScreenshotTest {
                             geckoSafeBrowsing = true,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -177,6 +189,8 @@ class GlobalSettingsScreenScreenshotTest {
                             passwordDialogMode = PasswordDialogMode.SET,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -195,6 +209,8 @@ class GlobalSettingsScreenScreenshotTest {
                             globalNotificationsEnabled = true,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -213,6 +229,8 @@ class GlobalSettingsScreenScreenshotTest {
                             globalNotificationsEnabled = false,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -232,6 +250,8 @@ class GlobalSettingsScreenScreenshotTest {
                             globalNotificationsEnabled = false,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }
@@ -251,6 +271,28 @@ class GlobalSettingsScreenScreenshotTest {
                             globalNotificationsEnabled = true,
                         )
                     ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
+                    onLicenses = {},
+                )
+            }
+        }
+        composeTestRule.onRoot().captureRoboImage(roborazziOptions = screenshotOptions)
+    }
+
+    @Test
+    fun withDeleteAllAppsRow() {
+        composeTestRule.setContent {
+            ShellifyTheme {
+                GlobalSettingsScreen(
+                    viewModel = buildVm(
+                        GlobalSettingsUiState(
+                            isLoaded = true,
+                            hasAnyApps = true,
+                        )
+                    ),
+                    currentLanguage = "en",
+                    onLanguageChange = {},
                     onLicenses = {},
                 )
             }

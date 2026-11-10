@@ -18,6 +18,7 @@ import io.shellify.app.core.theme.ThemeMode
 import io.shellify.app.domain.model.EngineType
 import io.shellify.app.domain.model.UserAgentMode
 import io.shellify.app.domain.model.WebApp
+import io.shellify.app.domain.usecase.DeleteAllAppsUseCase
 import io.shellify.app.domain.usecase.GetWebAppsUseCase
 import io.shellify.app.domain.usecase.SaveWebAppUseCase
 import io.shellify.core.ui.R as CoreUiR
@@ -52,6 +53,7 @@ class GlobalSettingsViewModelTest {
     private val context = mockk<Context>(relaxed = true)
     private val geckoEngineManager = mockk<GeckoEngineManager>(relaxed = true)
     private val simpleIconsManager = mockk<SimpleIconsManager>(relaxed = true)
+    private val deleteAllAppsUseCase = mockk<DeleteAllAppsUseCase>(relaxed = true)
 
     private lateinit var viewModel: GlobalSettingsViewModel
 
@@ -100,6 +102,7 @@ class GlobalSettingsViewModelTest {
             context = context,
             geckoEngineManager = geckoEngineManager,
             simpleIconsManager = simpleIconsManager,
+            deleteAllAppsUseCase = deleteAllAppsUseCase,
         )
     }
 
@@ -116,6 +119,39 @@ class GlobalSettingsViewModelTest {
         assertEquals(ThemeMode.SYSTEM, state.themeMode)
         assertFalse(state.hasPassword)
         assertFalse(state.backupEnabled)
+        assertFalse(state.hasAnyApps)
+    }
+
+    @Test
+    fun `hasAnyApps is true when apps exist`() = runTest {
+        every { getWebApps() } returns flowOf(
+            listOf(WebApp(id = 1L, name = "Gmail", url = "https://gmail.com", isolationId = "iso-1")),
+        )
+        val vm = GlobalSettingsViewModel(
+            themeManager = themeManager,
+            isolationManager = isolationManager,
+            getWebApps = getWebApps,
+            saveWebApp = saveWebApp,
+            passwordManager = passwordManager,
+            backupSettings = backupSettings,
+            backupManager = backupManager,
+            context = context,
+            geckoEngineManager = geckoEngineManager,
+            simpleIconsManager = simpleIconsManager,
+            deleteAllAppsUseCase = deleteAllAppsUseCase,
+        )
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.hasAnyApps)
+    }
+
+    @Test
+    fun `deleteAllApps clears isolation data and invokes use case`() = runTest {
+        val app = WebApp(id = 1L, name = "Gmail", url = "https://gmail.com", isolationId = "iso-1")
+        every { getWebApps() } returns flowOf(listOf(app))
+        viewModel.deleteAllApps()
+        advanceUntilIdle()
+        coVerify(exactly = 1) { isolationManager.clearData("iso-1") }
+        coVerify(exactly = 1) { deleteAllAppsUseCase() }
     }
 
     @Test
@@ -210,6 +246,7 @@ class GlobalSettingsViewModelTest {
             context = context,
             geckoEngineManager = geckoEngineManager,
             simpleIconsManager = simpleIconsManager,
+            deleteAllAppsUseCase = deleteAllAppsUseCase,
         )
         advanceUntilIdle()
         assertFalse(vm.uiState.value.geckoSafeBrowsing)
@@ -233,6 +270,7 @@ class GlobalSettingsViewModelTest {
             context = context,
             geckoEngineManager = geckoEngineManager,
             simpleIconsManager = simpleIconsManager,
+            deleteAllAppsUseCase = deleteAllAppsUseCase,
         )
         advanceUntilIdle()
         assertTrue(vm.uiState.value.geckoSafeBrowsing)
@@ -268,6 +306,7 @@ class GlobalSettingsViewModelTest {
             context = context,
             geckoEngineManager = geckoEngineManager,
             simpleIconsManager = simpleIconsManager,
+            deleteAllAppsUseCase = deleteAllAppsUseCase,
         )
         advanceUntilIdle()
         assertFalse(vm.uiState.value.globalNotificationsEnabled)
@@ -292,6 +331,7 @@ class GlobalSettingsViewModelTest {
             context = context,
             geckoEngineManager = geckoEngineManager,
             simpleIconsManager = simpleIconsManager,
+            deleteAllAppsUseCase = deleteAllAppsUseCase,
         )
         advanceUntilIdle()
         vm.uninstallGeckoEngine()

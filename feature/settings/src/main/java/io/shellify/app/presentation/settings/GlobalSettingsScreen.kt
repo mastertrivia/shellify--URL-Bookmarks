@@ -118,7 +118,10 @@ import androidx.compose.ui.unit.dp
 import io.shellify.app.core.backup.BackupSchedule
 import io.shellify.app.presentation.theme.ACCENT_COLORS
 import io.shellify.app.presentation.components.ConfirmDialog
+import io.shellify.app.presentation.components.LanguagePickerDialog
 import io.shellify.app.presentation.components.SurfaceCard
+import io.shellify.app.presentation.components.TypedConfirmDialog
+import io.shellify.app.presentation.components.languageDisplayName
 import io.shellify.app.presentation.theme.Dimens
 import io.shellify.app.presentation.theme.GeckoWarning
 import io.shellify.app.presentation.theme.VerifiedGreen
@@ -142,6 +145,8 @@ import java.util.Date
 @Composable
 fun GlobalSettingsScreen(
     viewModel: GlobalSettingsViewModel,
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit,
     onLicenses: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -149,6 +154,8 @@ fun GlobalSettingsScreen(
     val simpleIconsState by viewModel.simpleIconsManager.state.collectAsState()
     val geckoLatestVersion by viewModel.geckoEngineManager.latestVersion.collectAsState()
     var showUaDialog by remember { mutableStateOf(false) }
+    var showLanguagePicker by remember { mutableStateOf(false) }
+    var showDeleteAllAppsDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     // Trigger version check whenever the engine is installed
@@ -370,6 +377,85 @@ fun GlobalSettingsScreen(
                         current = state.accentColor,
                         onSelect = viewModel::setAccentColor,
                     )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = Dimens.spaceLg))
+                    ListItem(
+                        modifier = Modifier.clickable { showLanguagePicker = true },
+                        leadingContent = {
+                            Box(
+                                modifier = Modifier
+                                    .size(Dimens.sizeIconContainer)
+                                    .clip(RoundedCornerShape(Dimens.cornerMd))
+                                    .background(
+                                        MaterialTheme.colorScheme.primaryContainer.copy(
+                                            alpha = 0.4f
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    Icons.Default.Language,
+                                    null,
+                                    modifier = Modifier.size(Dimens.sizeMd),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                        headlineContent = {
+                            Text(
+                                stringResource(R.string.global_settings_language),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
+                        supportingContent = {
+                            Text(stringResource(R.string.global_settings_language_desc))
+                        },
+                        trailingContent = {
+                            Text(
+                                languageDisplayName(currentLanguage),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        },
+                    )
+                }
+
+                if (state.hasAnyApps) {
+                    SectionLabel(stringResource(R.string.global_settings_section_data))
+                    SurfaceCard {
+                        ListItem(
+                            modifier = Modifier.clickable { showDeleteAllAppsDialog = true },
+                            leadingContent = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(Dimens.sizeIconContainer)
+                                        .clip(RoundedCornerShape(Dimens.cornerMd))
+                                        .background(
+                                            MaterialTheme.colorScheme.errorContainer.copy(
+                                                alpha = 0.4f
+                                            )
+                                        ),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Icon(
+                                        Icons.Default.DeleteSweep,
+                                        null,
+                                        modifier = Modifier.size(Dimens.sizeMd),
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            },
+                            headlineContent = {
+                                Text(
+                                    stringResource(R.string.global_settings_delete_all_apps),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            supportingContent = {
+                                Text(stringResource(R.string.global_settings_delete_all_apps_desc))
+                            },
+                        )
+                    }
                 }
 
                 // ── Icon Pack ─────────────────────────────────────────────────────
@@ -1419,6 +1505,31 @@ fun GlobalSettingsScreen(
     }
 
     // ── Dialogs ───────────────────────────────────────────────────────────────
+
+    if (showLanguagePicker) {
+        LanguagePickerDialog(
+            currentLanguage = currentLanguage,
+            onDismiss = { showLanguagePicker = false },
+            onSelect = { code ->
+                showLanguagePicker = false
+                onLanguageChange(code)
+            },
+        )
+    }
+
+    if (showDeleteAllAppsDialog) {
+        TypedConfirmDialog(
+            title = stringResource(R.string.home_delete_all_apps_confirm_title),
+            body = stringResource(R.string.home_delete_all_apps_confirm_body),
+            confirmLabel = stringResource(R.string.common_delete_all),
+            confirmationCode = stringResource(R.string.home_delete_all_apps_confirm_code),
+            confirmationLabel = stringResource(R.string.home_delete_all_apps_confirm_label),
+            confirmationHint = stringResource(R.string.home_delete_all_apps_confirm_hint),
+            onConfirm = { showDeleteAllAppsDialog = false; viewModel.deleteAllApps() },
+            onDismiss = { showDeleteAllAppsDialog = false },
+            icon = Icons.Default.DeleteSweep,
+        )
+    }
 
     if (showUaDialog) {
         ModalBottomSheet(onDismissRequest = { showUaDialog = false }) {

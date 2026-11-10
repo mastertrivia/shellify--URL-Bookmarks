@@ -109,14 +109,14 @@ class GlobalSettingsViewModel(
 | Theme mode (Light/Dark/System) | `ThemeManager` → DataStore |
 | Dynamic color | `ThemeManager` → DataStore |
 | Accent color | `ThemeManager` → DataStore |
-| Language (en/fr/ar) | `ThemeManager.selectedLanguage` → DataStore + `AppCompatDelegate` |
+| Language (en/fr/ar) | Appearance row opens `LanguagePickerDialog`; `onLanguageChange` writes `ThemeManager` + `LocaleHelper` |
 | Backup location + schedule | `BackupManager` |
 | GeckoView install / uninstall | `GeckoEngineManager.install()` / `.uninstall()` |
-| Wipe all data | `WipeAllData` use case → clears Room DB + DataStore + isolated profiles |
+| Delete all apps | Data section row (shown when `hasAnyApps`); `TypedConfirmDialog` requires typing `A1B2C3D4` then `DeleteAllAppsUseCase` |
 
 ### `GlobalSettingsScreen`
 
-Sections: **Appearance** | **Language** | **Backup** | **Browser Engine** | **About** (version, licenses link) | **Danger zone** (wipe all).
+Sections: **Appearance** (includes Language) | **Data** (Delete all apps, when any apps exist) | **Backup** | **Browser Engine** | **About** (version, licenses link).
 
 ### `LicensesScreen`
 

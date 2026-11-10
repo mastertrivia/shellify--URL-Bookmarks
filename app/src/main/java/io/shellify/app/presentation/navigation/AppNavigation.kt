@@ -168,7 +168,6 @@ fun AppNavigation(
                     viewModel = remember {
                         HomeViewModel(
                             app.getWebApps,
-                            app.deleteAllApps,
                             app.deleteWebApp,
                             app.getCategories,
                             app.saveWebApp,
@@ -179,12 +178,6 @@ fun AppNavigation(
                         )
                     },
                     geckoInstalled = geckoInstalled,
-                    currentLanguage = currentLanguage,
-                    onLanguageChange = { code ->
-                        coroutineScope.launch { app.themeManager.setLanguageCode(code) }
-                        LocaleHelper.setLanguageCode(context, code)
-                        (context as? Activity)?.recreate()
-                    },
                     onAddApp = { navController.navigate(Screen.Add.createRoute()) },
                     onEditApp = { id -> navController.navigate(Screen.Add.createRoute(id)) },
                     onOpenApp = { },
@@ -313,8 +306,15 @@ fun AppNavigation(
                             app.getWebApps, app.saveWebApp,
                             app.passwordManager, app.backupSettings, app.backupManager, app,
                             app.geckoEngineManager, app.simpleIconsManager,
+                            app.deleteAllApps,
                             onGeckoInstalled = { app.injectAndLoadGeckoView() },
                         )
+                    },
+                    currentLanguage = currentLanguage,
+                    onLanguageChange = { code ->
+                        coroutineScope.launch { app.themeManager.setLanguageCode(code) }
+                        LocaleHelper.setLanguageCode(context, code)
+                        (context as? Activity)?.recreate()
                     },
                     onLicenses = { navController.navigate(Screen.Licenses.route) },
                 )

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
@@ -32,10 +34,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +54,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
@@ -117,6 +125,158 @@ fun ConfirmDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
         },
     )
+}
+
+/**
+ * Destructive confirm dialog that stays disabled until [confirmationCode] is typed exactly.
+ *
+ * @param title              Dialog headline text.
+ * @param body               Dialog body text.
+ * @param confirmLabel       Label for the confirm button.
+ * @param confirmationCode   Exact code the user must type to enable confirm.
+ * @param confirmationLabel  Visible label for the code field.
+ * @param confirmationHint   Helper text shown under the code field.
+ * @param onConfirm          Callback invoked when the user taps the enabled confirm button.
+ * @param onDismiss          Callback invoked on dismiss or cancel.
+ * @param icon               Optional leading icon shown above the title.
+ */
+@Composable
+fun TypedConfirmDialog(
+    title: String,
+    body: String,
+    confirmLabel: String,
+    confirmationCode: String,
+    confirmationLabel: String,
+    confirmationHint: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    icon: ImageVector? = null,
+) {
+    var typed by remember { mutableStateOf("") }
+    val isConfirmed = typed == confirmationCode
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = if (icon != null) ({ Icon(icon, null) }) else null,
+        title = { Text(title) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(Dimens.spaceMd)) {
+                Text(body)
+                OutlinedTextField(
+                    value = typed,
+                    onValueChange = { typed = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    label = { Text(confirmationLabel) },
+                    placeholder = {
+                        Text(
+                            confirmationCode,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+                        )
+                    },
+                    supportingText = {
+                        Text(
+                            confirmationHint,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Characters,
+                        keyboardType = KeyboardType.Ascii,
+                    ),
+                    shape = RoundedCornerShape(Dimens.cornerMd),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                enabled = isConfirmed,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            ) { Text(confirmLabel) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
+        },
+    )
+}
+
+private data class LanguageOption(val code: String, val nativeName: String, val englishName: String)
+
+private val languageOptions = listOf(
+    LanguageOption("en", "English", "English"),
+    LanguageOption("fr", "Français", "French"),
+    LanguageOption("ar", "العربية", "Arabic"),
+)
+
+fun languageDisplayName(code: String): String =
+    languageOptions.find { it.code == code }?.nativeName ?: code
+
+/**
+ * Bottom sheet for choosing the app display language.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LanguagePickerDialog(
+    currentLanguage: String,
+    onDismiss: () -> Unit,
+    onSelect: (String) -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Text(
+            stringResource(R.string.language_dialog_title),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(
+                start = Dimens.spaceLg,
+                end = Dimens.spaceLg,
+                bottom = Dimens.spaceSm
+            ),
+        )
+        Column(
+            modifier = Modifier.padding(horizontal = Dimens.spaceMd),
+            verticalArrangement = Arrangement.spacedBy(Dimens.spaceXxs),
+        ) {
+            languageOptions.forEach { lang ->
+                val isSelected = currentLanguage == lang.code
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(Dimens.cornerLg))
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+                        )
+                        .clickable { onSelect(lang.code) }
+                        .padding(horizontal = Dimens.spaceLg, vertical = Dimens.spaceMd),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            lang.nativeName,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            lang.englishName,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer.copy(
+                                alpha = 0.7f
+                            )
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    RadioButton(
+                        selected = isSelected,
+                        onClick = { onSelect(lang.code) },
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(Dimens.spaceXl))
+    }
 }
 
 /**

@@ -39,6 +39,8 @@
 | `BottomNavBar` | `currentRoute`, `onNavigate` — 4-tab navigation rail |
 | `LoadingIndicator` | `modifier` — centered `CircularProgressIndicator` |
 | `EmptyState` | `title`, `body`, `illustration`, `action` |
+| `TypedConfirmDialog` | `title`, `body`, `confirmLabel`, `confirmationCode`, field label/hint — confirm stays disabled until the typed value matches exactly |
+| `LanguagePickerDialog` | `currentLanguage`, `onDismiss`, `onSelect` — EN/FR/AR bottom sheet; `languageDisplayName()` for the current code |
 
 ## Dependencies
 

@@ -24,11 +24,15 @@
     <string name="common_current_password">كلمة المرور الحالية</string>
     <string name="common_wrong_password">كلمة مرور خاطئة</string>
     <string name="home_title">Shellify</string>
+    <string name="home_title_with_count">Shellify-%d</string>
     <string name="home_loading">جارٍ تحميل التطبيقات</string>
     <string name="home_search_hint">ابحث عن التطبيقات…</string>
     <string name="home_show_details_cd">عرض التفاصيل</string>
     <string name="home_hide_details_cd">إخفاء التفاصيل</string>
     <string name="home_search_cd">بحث</string>
+    <string name="home_close_search_cd">إغلاق البحث</string>
+    <string name="home_grid_view_cd">التبديل إلى عرض الشبكة</string>
+    <string name="home_list_view_cd">التبديل إلى عرض القائمة</string>
     <string name="home_add_fab_cd">إضافة PWA</string>
     <string name="home_add_fab_label">تطبيق جديد</string>
     <string name="home_quick_suggestions">اقتراحات سريعة</string>
@@ -174,6 +178,11 @@
     <string name="settings_delete_confirm_body">سيؤدي هذا إلى إزالة التطبيق وجميع بياناته المخزنة.</string>
     <string name="settings_confirm">تأكيد</string>
     <string name="global_settings_title">الإعدادات</string>
+    <string name="global_settings_language">اللغة</string>
+    <string name="global_settings_language_desc">اختر لغة عرض Shellify</string>
+    <string name="global_settings_section_data">البيانات</string>
+    <string name="global_settings_delete_all_apps">حذف جميع التطبيقات</string>
+    <string name="global_settings_delete_all_apps_desc">إزالة كل المواقع المحفوظة وبيانات التصفح الخاصة بها نهائياً</string>
     <string name="global_settings_section_appearance">المظهر</string>
     <string name="global_settings_theme_label">السمة</string>
     <string name="global_settings_theme_system">النظام</string>
@@ -567,6 +576,9 @@
     <string name="home_delete_all_apps_cd">حذف جميع التطبيقات</string>
     <string name="home_delete_all_apps_confirm_title">حذف جميع التطبيقات؟</string>
     <string name="home_delete_all_apps_confirm_body">ستُحذف جميع التطبيقات وبيانات التصفح الخاصة بها بشكل دائم. لا يمكن التراجع عن هذه العملية.</string>
+    <string name="home_delete_all_apps_confirm_code" translatable="false">A1B2C3D4</string>
+    <string name="home_delete_all_apps_confirm_label">رمز التأكيد</string>
+    <string name="home_delete_all_apps_confirm_hint">اكتب A1B2C3D4 لتفعيل حذف الكل</string>
     <string name="categories_delete_all_cd">حذف جميع الفئات</string>
     <string name="categories_delete_all_confirm_title">حذف جميع الفئات؟</string>
     <string name="categories_delete_all_confirm_body">ستُحذف جميع الفئات. لن تُحذف تطبيقاتك.</string>

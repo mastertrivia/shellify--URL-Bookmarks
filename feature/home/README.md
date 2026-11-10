@@ -39,10 +39,11 @@ Top-level Composable wired to `HomeViewModel` via `viewModel()` factory.
 
 | UI element | Behaviour |
 |---|---|
-| Search bar | `OutlinedTextField` at top; updates `viewModel.searchQuery` |
+| Title | `Shellify` when empty; `Shellify-%d` (`home_title_with_count`) using unfiltered `appCount` |
+| Top bar actions | Search / details / grid-list icons. Search opens an inline TopAppBar field with Close; details and view icons hide while searching. Language and Delete All live in Settings, not here. |
 | Category chips | `LazyRow` of `FilterChip`; selecting one updates `viewModel.selectedCategory` |
-| App grid | `LazyVerticalGrid` of `WebAppCard` composables; icons loaded via `AsyncImage` (Coil) |
-| FAB | Bottom-right; calls `navController.navigate("add")` |
+| App grid | `LazyVerticalStaggeredGrid` of `AppCard` composables; icons loaded via `AsyncImage` (Coil) |
+| FAB | Bottom-right; shown when the filtered list is non-empty; calls `navController.navigate("add")` |
 | Empty state | When list is empty and no search active: CTA card that routes to `feature:onboarding` step 4 |
 | Long-press menu | `DropdownMenu` with: Open, Settings, Share, Delete |
 

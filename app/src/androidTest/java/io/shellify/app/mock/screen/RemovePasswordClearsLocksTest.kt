@@ -21,6 +21,7 @@ import io.shellify.app.domain.model.EngineType
 import io.shellify.app.domain.model.LockType
 import io.shellify.app.domain.model.UserAgentMode
 import io.shellify.app.domain.model.WebApp
+import io.shellify.app.domain.usecase.DeleteAllAppsUseCase
 import io.shellify.app.domain.usecase.GetWebAppsUseCase
 import io.shellify.app.domain.usecase.SaveWebAppUseCase
 import io.shellify.app.presentation.settings.GlobalSettingsViewModel
@@ -187,6 +188,7 @@ class RemovePasswordClearsLocksTest {
             simpleIconsManager = mockk<SimpleIconsManager> {
                 every { state } returns MutableStateFlow(SimpleIconsState.NotImported)
             },
+            deleteAllAppsUseCase = mockk<DeleteAllAppsUseCase>(relaxed = true),
         )
     }
 

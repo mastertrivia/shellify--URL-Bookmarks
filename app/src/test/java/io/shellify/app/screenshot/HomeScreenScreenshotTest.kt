@@ -64,8 +64,6 @@ class HomeScreenScreenshotTest {
                 HomeScreen(
                     viewModel = buildVm(HomeUiState(apps = emptyList(), isLoading = false)),
                     geckoInstalled = true,
-                    currentLanguage = "en",
-                    onLanguageChange = {},
                     onAddApp = {},
                     onEditApp = {},
                     onOpenApp = {},
@@ -89,10 +87,8 @@ class HomeScreenScreenshotTest {
         composeTestRule.setContent {
             ShellifyTheme {
                 HomeScreen(
-                    viewModel = buildVm(HomeUiState(apps = apps, hasAnyApps = true, isLoading = false)),
+                    viewModel = buildVm(HomeUiState(apps = apps, hasAnyApps = true, appCount = apps.size, isLoading = false)),
                     geckoInstalled = true,
-                    currentLanguage = "en",
-                    onLanguageChange = {},
                     onAddApp = {},
                     onEditApp = {},
                     onOpenApp = {},
@@ -121,13 +117,12 @@ class HomeScreenScreenshotTest {
                         HomeUiState(
                             apps = apps,
                             hasAnyApps = true,
+                            appCount = apps.size,
                             categories = categories,
                             isLoading = false,
                         )
                     ),
                     geckoInstalled = true,
-                    currentLanguage = "en",
-                    onLanguageChange = {},
                     onAddApp = {},
                     onEditApp = {},
                     onOpenApp = {},
@@ -166,10 +161,8 @@ class HomeScreenScreenshotTest {
         composeTestRule.setContent {
             ShellifyTheme {
                 HomeScreen(
-                    viewModel = buildVm(HomeUiState(apps = apps, hasAnyApps = true, isLoading = false)),
+                    viewModel = buildVm(HomeUiState(apps = apps, hasAnyApps = true, appCount = apps.size, isLoading = false)),
                     geckoInstalled = true,
-                    currentLanguage = "en",
-                    onLanguageChange = {},
                     onAddApp = {},
                     onEditApp = {},
                     onOpenApp = {},
@@ -192,14 +185,13 @@ class HomeScreenScreenshotTest {
                         HomeUiState(
                             apps = emptyList(),
                             hasAnyApps = true,
+                            appCount = 1,
                             categories = categories,
                             selectedCategoryId = 1L,
                             isLoading = false,
                         )
                     ),
                     geckoInstalled = true,
-                    currentLanguage = "en",
-                    onLanguageChange = {},
                     onAddApp = {},
                     onEditApp = {},
                     onOpenApp = {},

@@ -12,7 +12,6 @@ import io.shellify.app.core.pwa.PwaAnalyzer
 import io.shellify.app.domain.model.Category
 import io.shellify.app.domain.model.PwaManifest
 import io.shellify.app.domain.model.WebApp
-import io.shellify.app.domain.usecase.DeleteAllAppsUseCase
 import io.shellify.app.domain.usecase.DeleteWebAppUseCase
 import io.shellify.app.domain.usecase.GetCategoriesUseCase
 import io.shellify.app.domain.usecase.GetWebAppsUseCase
@@ -39,7 +38,6 @@ class HomeViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val getWebApps = mockk<GetWebAppsUseCase>()
-    private val deleteAllAppsUseCase = mockk<DeleteAllAppsUseCase>(relaxed = true)
     private val deleteWebApp = mockk<DeleteWebAppUseCase>()
     private val getCategories = mockk<GetCategoriesUseCase>()
     private val saveWebApp = mockk<SaveWebAppUseCase>()
@@ -63,7 +61,7 @@ class HomeViewModelTest {
         coEvery { deleteWebApp(any()) } returns Unit
         every { context.getSystemService(Context.NOTIFICATION_SERVICE) } returns mockk<NotificationManager>(relaxed = true)
         viewModel = HomeViewModel(
-            getWebApps, deleteAllAppsUseCase, deleteWebApp, getCategories, saveWebApp,
+            getWebApps, deleteWebApp, getCategories, saveWebApp,
             isolationManager, context, pwaAnalyzer, faviconFetcher
         )
     }
@@ -80,6 +78,7 @@ class HomeViewModelTest {
         advanceUntilIdle()
         val state = viewModel.uiState.value
         assertEquals(2, state.apps.size)
+        assertEquals(2, state.appCount)
         assertEquals(1, state.categories.size)
         assertTrue(state.hasAnyApps)
         assertFalse(state.isLoading)
@@ -105,6 +104,17 @@ class HomeViewModelTest {
         val state = viewModel.uiState.value
         assertEquals(2, state.apps.size)
         assertNull(state.selectedCategoryId)
+    }
+
+    @Test
+    fun `appCount stays unfiltered when search and category change`() = runTest {
+        backgroundScope.launch { viewModel.uiState.collect {} }
+        viewModel.setSearch("gmail")
+        viewModel.selectCategory(10L)
+        advanceUntilIdle()
+        val state = viewModel.uiState.value
+        assertEquals(2, state.appCount)
+        assertTrue(state.hasAnyApps)
     }
 
     @Test

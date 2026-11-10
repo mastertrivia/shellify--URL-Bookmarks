@@ -11,7 +11,6 @@ import io.shellify.app.domain.model.Category
 import io.shellify.app.domain.model.NotificationChannelId
 import io.shellify.app.domain.model.WebApp
 import io.shellify.app.domain.model.IconSource
-import io.shellify.app.domain.usecase.DeleteAllAppsUseCase
 import io.shellify.app.domain.usecase.DeleteWebAppUseCase
 import io.shellify.app.domain.usecase.GetCategoriesUseCase
 import io.shellify.app.domain.usecase.GetWebAppsUseCase
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,6 +28,7 @@ import java.util.UUID
 data class HomeUiState(
     val apps: List<WebApp> = emptyList(),
     val hasAnyApps: Boolean = false,
+    val appCount: Int = 0,
     val categories: List<Category> = emptyList(),
     val selectedCategoryId: Long? = null,
     val searchQuery: String = "",
@@ -42,7 +41,6 @@ private data class QuickAddState(val loadingUrls: Set<String> = emptySet(), val 
 
 class HomeViewModel(
     private val getWebApps: GetWebAppsUseCase,
-    private val deleteAllAppsUseCase: DeleteAllAppsUseCase,
     private val deleteWebApp: DeleteWebAppUseCase,
     getCategories: GetCategoriesUseCase,
     private val saveWebApp: SaveWebAppUseCase,
@@ -72,6 +70,7 @@ class HomeViewModel(
         HomeUiState(
             apps = filtered,
             hasAnyApps = apps.isNotEmpty(),
+            appCount = apps.size,
             categories = categories,
             selectedCategoryId = selectedCategory,
             searchQuery = query,
@@ -127,14 +126,5 @@ class HomeViewModel(
 
     fun clearData(app: WebApp) = viewModelScope.launch {
         isolationManager.clearData(app.isolationId)
-    }
-
-    fun deleteAllApps() = viewModelScope.launch {
-        val apps = getWebApps().first()
-        apps.forEach { app ->
-            isolationManager.clearData(app.isolationId)
-            PwaShortcutManager.removeShortcut(context, app)
-        }
-        deleteAllAppsUseCase()
     }
 }

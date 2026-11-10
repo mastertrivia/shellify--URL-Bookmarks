@@ -20,6 +20,7 @@ import io.shellify.app.core.theme.ThemeManager
 import io.shellify.app.core.theme.ThemeMode
 import io.shellify.app.domain.model.LockType
 import io.shellify.app.domain.model.UserAgentMode
+import io.shellify.app.domain.usecase.DeleteAllAppsUseCase
 import io.shellify.app.domain.usecase.GetWebAppsUseCase
 import io.shellify.app.domain.usecase.SaveWebAppUseCase
 import io.shellify.core.ui.R as CoreUiR
@@ -63,6 +64,7 @@ data class GlobalSettingsUiState(
     val showRestoreConfirmDialog: Boolean = false,
     val showImportPasswordDialog: Boolean = false,
     val importSourceUri: Uri? = null,
+    val hasAnyApps: Boolean = false,
 )
 
 class GlobalSettingsViewModel(
@@ -76,6 +78,7 @@ class GlobalSettingsViewModel(
     private val context: Context,
     val geckoEngineManager: GeckoEngineManager,
     val simpleIconsManager: SimpleIconsManager,
+    private val deleteAllAppsUseCase: DeleteAllAppsUseCase,
     private val onGeckoInstalled: () -> Unit = {},
 ) : ViewModel() {
 
@@ -104,9 +107,13 @@ class GlobalSettingsViewModel(
                     backupDirectoryUri = backupSettings.directoryUri.first(),
                     backupSchedule = backupSettings.schedule.first(),
                     backupLastTime = backupSettings.lastBackupTime.first(),
+                    hasAnyApps = getWebApps().first().isNotEmpty(),
                     isLoaded = true,
                 )
             }
+        }
+        viewModelScope.launch {
+            getWebApps().collect { apps -> _state.update { it.copy(hasAnyApps = apps.isNotEmpty()) } }
         }
         // Continue watching for live updates after the initial load
         viewModelScope.launch {
@@ -393,4 +400,13 @@ class GlobalSettingsViewModel(
         viewModelScope.launch { simpleIconsManager.importFromUri(uri) }
 
     fun removeSimpleIcons() = simpleIconsManager.remove()
+
+    fun deleteAllApps() = viewModelScope.launch {
+        val apps = getWebApps().first()
+        apps.forEach { app ->
+            isolationManager.clearData(app.isolationId)
+            PwaShortcutManager.removeShortcut(context, app)
+        }
+        deleteAllAppsUseCase()
+    }
 }
