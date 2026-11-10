@@ -62,6 +62,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
@@ -120,9 +121,12 @@ import androidx.compose.material3.RadioButton
 import io.shellify.app.domain.model.Category
 import io.shellify.app.domain.model.LockType
 import io.shellify.app.domain.model.WebApp
+import android.content.Intent
+import android.net.Uri
 import io.shellify.app.presentation.components.AppIcon
 import io.shellify.app.presentation.components.ConfirmDialog
 import io.shellify.app.presentation.components.EmptyStateIllustration
+import io.shellify.app.presentation.components.TypedConfirmDialog
 import io.shellify.app.presentation.theme.Dimens
 import io.shellify.app.presentation.theme.GeckoWarning
 import io.shellify.app.presentation.theme.TagAdBlock
@@ -718,10 +722,16 @@ private fun AppCard(
                     }
                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                         AppCardContextMenu(
-                            onAssignCategory = { showMenu = false; showCategoryPicker = true },
+                            onOpenInBrowser = {
+                                showMenu = false
+                                runCatching {
+                                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(app.url)))
+                                }
+                            },
                             onShare = { showMenu = false; showShareSheet = true },
                             onClearData = { showMenu = false; showClearDataDialog = true },
                             onDelete = { showMenu = false; showDeleteDialog = true },
+                            onAssignCategory = { showMenu = false; showCategoryPicker = true },
                             onSettings = { showMenu = false; onSettings() },
                         )
                     }
@@ -787,14 +797,16 @@ private fun AppCard(
     }
 
     if (showDeleteDialog) {
-        ConfirmDialog(
+        TypedConfirmDialog(
             title = stringResource(R.string.settings_delete_confirm, app.name),
             body = stringResource(R.string.settings_delete_confirm_body),
             confirmLabel = stringResource(R.string.home_menu_delete),
+            confirmationCode = stringResource(R.string.home_delete_app_confirm_code),
+            confirmationLabel = stringResource(R.string.home_delete_all_apps_confirm_label),
+            confirmationHint = stringResource(R.string.home_delete_app_confirm_hint),
             onConfirm = { showDeleteDialog = false; onDelete() },
             onDismiss = { showDeleteDialog = false },
             icon = Icons.Default.DeleteForever,
-            isDestructive = true,
         )
     }
 
@@ -909,22 +921,27 @@ private fun FeatureTags(app: WebApp) {
 
 @Composable
 fun AppCardContextMenu(
-    onAssignCategory: () -> Unit,
+    onOpenInBrowser: () -> Unit,
     onShare: () -> Unit,
     onClearData: () -> Unit,
     onDelete: () -> Unit,
+    onAssignCategory: () -> Unit,
     onSettings: () -> Unit,
 ) {
     Column {
         DropdownMenuItem(
-            text = { Text(stringResource(R.string.home_menu_assign_category)) },
-            leadingIcon = { Icon(Icons.Default.Category, null) },
-            onClick = onAssignCategory,
+            text = { Text(stringResource(R.string.home_menu_open_in_browser)) },
+            leadingIcon = { Icon(Icons.AutoMirrored.Filled.OpenInNew, null) },
+            onClick = onOpenInBrowser,
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.share_button)) },
             leadingIcon = { Icon(Icons.Default.Share, null) },
             onClick = onShare,
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = Dimens.spaceXxs),
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.home_menu_clear_data)) },
@@ -935,6 +952,15 @@ fun AppCardContextMenu(
             text = { Text(stringResource(R.string.home_menu_delete)) },
             leadingIcon = { Icon(Icons.Default.DeleteForever, null) },
             onClick = onDelete,
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = Dimens.spaceXxs),
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+        )
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.home_menu_assign_category)) },
+            leadingIcon = { Icon(Icons.Default.Category, null) },
+            onClick = onAssignCategory,
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.home_menu_settings)) },

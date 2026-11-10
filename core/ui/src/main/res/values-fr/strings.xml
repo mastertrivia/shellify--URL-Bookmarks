@@ -47,6 +47,7 @@
     <string name="home_menu_settings">Paramètres</string>
     <string name="home_menu_clear_data">Effacer les données</string>
     <string name="home_menu_delete">Supprimer</string>
+    <string name="home_menu_open_in_browser">Ouvrir dans le navigateur</string>
     <string name="home_menu_more_cd">Plus d\'options</string>
     <string name="home_gecko_required">Moteur GeckoView manquant</string>
     <string name="home_clear_data_title">Effacer les données de l\'application</string>
@@ -579,6 +580,8 @@
     <string name="home_delete_all_apps_confirm_code" translatable="false">A1B2C3D4</string>
     <string name="home_delete_all_apps_confirm_label">Code de confirmation</string>
     <string name="home_delete_all_apps_confirm_hint">Saisissez A1B2C3D4 pour activer Supprimer tout</string>
+    <string name="home_delete_app_confirm_code" translatable="false">123</string>
+    <string name="home_delete_app_confirm_hint">Saisissez 123 pour activer Supprimer</string>
     <string name="categories_delete_all_cd">Supprimer toutes les catégories</string>
     <string name="categories_delete_all_confirm_title">Supprimer toutes les catégories ?</string>
     <string name="categories_delete_all_confirm_body">Toutes les catégories seront supprimées. Vos applications ne seront pas supprimées.</string>

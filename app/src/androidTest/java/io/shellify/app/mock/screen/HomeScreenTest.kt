@@ -1,10 +1,13 @@
 package io.shellify.app.mock.screen
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import io.mockk.verify
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -243,10 +246,11 @@ class HomeScreenTest {
 
         composeTestRule.onNodeWithContentDescription(context.getString(CoreUiR.string.home_menu_more_cd)).performClick()
 
-        composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_assign_category)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_open_in_browser)).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(CoreUiR.string.share_button)).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_clear_data)).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_delete)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_assign_category)).assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_settings)).assertIsDisplayed()
     }
 
@@ -261,6 +265,9 @@ class HomeScreenTest {
         composeTestRule
             .onNodeWithText(context.getString(CoreUiR.string.settings_delete_confirm, "GitHub"))
             .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.home_menu_delete))
+            .assertIsNotEnabled()
     }
 
     @Test
@@ -282,7 +289,13 @@ class HomeScreenTest {
 
         composeTestRule.onNodeWithContentDescription(context.getString(CoreUiR.string.home_menu_more_cd)).performClick()
         composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_delete)).performClick()
-        composeTestRule.onNodeWithText(context.getString(CoreUiR.string.home_menu_delete)).performClick()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.home_delete_all_apps_confirm_label))
+            .performTextInput(context.getString(CoreUiR.string.home_delete_app_confirm_code))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.home_menu_delete))
+            .assertIsEnabled()
+            .performClick()
 
         verify(exactly = 1) { vm.delete(app) }
     }

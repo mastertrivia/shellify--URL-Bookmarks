@@ -139,10 +139,11 @@ class HomeScreenScreenshotTest {
             ShellifyTheme {
                 Surface(modifier = Modifier.fillMaxWidth()) {
                     AppCardContextMenu(
-                        onAssignCategory = {},
+                        onOpenInBrowser = {},
                         onShare = {},
                         onClearData = {},
                         onDelete = {},
+                        onAssignCategory = {},
                         onSettings = {},
                     )
                 }
