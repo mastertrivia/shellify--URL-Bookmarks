@@ -16,6 +16,7 @@ import io.shellify.app.core.security.PasswordManager
 import io.shellify.app.core.security.verifyPassword
 import io.shellify.app.core.shortcut.PwaShortcutManager
 import io.shellify.app.core.shortcut.SvgIconRenderer
+import io.shellify.app.core.theme.ThemeManager
 import io.shellify.app.domain.model.EngineType
 import io.shellify.app.domain.model.IconSource
 import io.shellify.app.domain.model.LockType
@@ -63,6 +64,7 @@ data class AppSettingsUiState(
     val hasPassword: Boolean = false,
     val globalNotificationsEnabled: Boolean = false,
     val hasNetworkLogs: Boolean = false,
+    val shareWebsiteUrl: Boolean = true,
 )
 
 class AppSettingsViewModel(
@@ -79,6 +81,7 @@ class AppSettingsViewModel(
     val geckoEngineManager: GeckoEngineManager,
     private val exportNetworkLog: ExportNetworkLogsUseCase,
     private val getNetworkLog: GetNetworkLogUseCase,
+    private val themeManager: ThemeManager? = null,
     private val isGlobalNotificationsEnabled: () -> Boolean = {
         androidx.core.app.NotificationManagerCompat.from(context).areNotificationsEnabled()
     },
@@ -116,6 +119,13 @@ class AppSettingsViewModel(
         viewModelScope.launch {
             getNetworkLog(appId).collect { logs ->
                 _state.update { it.copy(hasNetworkLogs = logs.isNotEmpty()) }
+            }
+        }
+        themeManager?.let { manager ->
+            viewModelScope.launch {
+                manager.shareWebsiteUrl.collect { enabled ->
+                    _state.update { it.copy(shareWebsiteUrl = enabled) }
+                }
             }
         }
     }

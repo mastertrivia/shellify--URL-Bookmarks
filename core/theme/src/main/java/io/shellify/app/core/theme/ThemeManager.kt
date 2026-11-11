@@ -31,6 +31,7 @@ class ThemeManager(private val context: Context) {
     private val keyDefaultEngine = stringPreferencesKey("default_engine")
     private val keyGeckoSafeBrowsing = booleanPreferencesKey("gecko_safe_browsing")
     private val keyGlobalNotificationsEnabled = booleanPreferencesKey("global_notifications_enabled")
+    private val keyShareWebsiteUrl = booleanPreferencesKey("share_website_url")
 
     val themeMode: Flow<ThemeMode> = context.themeStore.data.map { prefs ->
         runCatching { ThemeMode.valueOf(prefs[keyThemeMode] ?: "") }.getOrDefault(ThemeMode.SYSTEM)
@@ -62,6 +63,10 @@ class ThemeManager(private val context: Context) {
 
     val globalNotificationsEnabled: Flow<Boolean> = context.themeStore.data.map { prefs ->
         prefs[keyGlobalNotificationsEnabled] ?: false
+    }
+
+    val shareWebsiteUrl: Flow<Boolean> = context.themeStore.data.map { prefs ->
+        prefs[keyShareWebsiteUrl] ?: true
     }
 
     private val keyAccentColor = stringPreferencesKey("accent_color")
@@ -107,6 +112,10 @@ class ThemeManager(private val context: Context) {
 
     suspend fun setGlobalNotificationsEnabled(enabled: Boolean) {
         context.themeStore.edit { it[keyGlobalNotificationsEnabled] = enabled }
+    }
+
+    suspend fun setShareWebsiteUrl(enabled: Boolean) {
+        context.themeStore.edit { it[keyShareWebsiteUrl] = enabled }
     }
 
     private val keyOnboardingDone = booleanPreferencesKey("onboarding_done")

@@ -67,6 +67,7 @@ class GlobalSettingsViewModelTest {
         every { themeManager.defaultEngineType } returns MutableStateFlow(EngineType.SYSTEM_WEBVIEW)
         every { themeManager.geckoSafeBrowsing } returns MutableStateFlow(false)
         every { themeManager.globalNotificationsEnabled } returns MutableStateFlow(true)
+        every { themeManager.shareWebsiteUrl } returns MutableStateFlow(true)
         every { passwordManager.passwordHash } returns MutableStateFlow(null)
         every { passwordManager.wipeOnFailedAttempts } returns MutableStateFlow(false)
         every { passwordManager.screenshotProtection } returns MutableStateFlow(false)
@@ -314,6 +315,44 @@ class GlobalSettingsViewModelTest {
         flow.value = true
         advanceUntilIdle()
         assertTrue(vm.uiState.value.globalNotificationsEnabled)
+    }
+
+    @Test
+    fun `shareWebsiteUrl defaults to true`() = runTest {
+        advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.shareWebsiteUrl)
+    }
+
+    @Test
+    fun `setShareWebsiteUrl delegates to themeManager`() = runTest {
+        viewModel.setShareWebsiteUrl(false)
+        advanceUntilIdle()
+        coVerify(exactly = 1) { themeManager.setShareWebsiteUrl(false) }
+    }
+
+    @Test
+    fun `shareWebsiteUrl state reflects themeManager flow`() = runTest {
+        val flow = MutableStateFlow(true)
+        every { themeManager.shareWebsiteUrl } returns flow
+        val vm = GlobalSettingsViewModel(
+            themeManager = themeManager,
+            isolationManager = isolationManager,
+            getWebApps = getWebApps,
+            saveWebApp = saveWebApp,
+            passwordManager = passwordManager,
+            backupSettings = backupSettings,
+            backupManager = backupManager,
+            context = context,
+            geckoEngineManager = geckoEngineManager,
+            simpleIconsManager = simpleIconsManager,
+            deleteAllAppsUseCase = deleteAllAppsUseCase,
+        )
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.shareWebsiteUrl)
+
+        flow.value = false
+        advanceUntilIdle()
+        assertFalse(vm.uiState.value.shareWebsiteUrl)
     }
 
     @Test

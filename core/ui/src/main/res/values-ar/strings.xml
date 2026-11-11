@@ -184,6 +184,9 @@
     <string name="global_settings_section_data">البيانات</string>
     <string name="global_settings_delete_all_apps">حذف جميع التطبيقات</string>
     <string name="global_settings_delete_all_apps_desc">إزالة كل المواقع المحفوظة وبيانات التصفح الخاصة بها نهائياً</string>
+    <string name="global_settings_section_sharing">المشاركة</string>
+    <string name="global_settings_share_website_url">مشاركة رابط الموقع</string>
+    <string name="global_settings_share_website_url_desc">عرض رابط الموقع المحفوظ بدلًا من رابط Shellify عند المشاركة</string>
     <string name="global_settings_section_appearance">المظهر</string>
     <string name="global_settings_theme_label">السمة</string>
     <string name="global_settings_theme_system">النظام</string>

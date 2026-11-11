@@ -41,6 +41,8 @@ data class GlobalSettingsUiState(
     val defaultUaMode: UserAgentMode = UserAgentMode.CHROME_MOBILE,
     val defaultEngineType: EngineType = EngineType.SYSTEM_WEBVIEW,
     val geckoSafeBrowsing: Boolean = false,
+    // Sharing
+    val shareWebsiteUrl: Boolean = true,
     // Notifications
     val globalNotificationsEnabled: Boolean = false,
     // App lock password
@@ -98,6 +100,7 @@ class GlobalSettingsViewModel(
                     geckoSafeBrowsing = themeManager.geckoSafeBrowsing.first().also { v ->
                         geckoEngineManager.applySafeBrowsing(v)
                     },
+                    shareWebsiteUrl = themeManager.shareWebsiteUrl.first(),
                     globalNotificationsEnabled = themeManager.globalNotificationsEnabled.first(),
                     hasPassword = passwordManager.passwordHash.first() != null,
                     wipeOnFailedAttempts = passwordManager.wipeOnFailedAttempts.first(),
@@ -135,6 +138,11 @@ class GlobalSettingsViewModel(
             themeManager.geckoSafeBrowsing.collect { v ->
                 geckoEngineManager.applySafeBrowsing(v)
                 _state.update { it.copy(geckoSafeBrowsing = v) }
+            }
+        }
+        viewModelScope.launch {
+            themeManager.shareWebsiteUrl.collect { enabled ->
+                _state.update { it.copy(shareWebsiteUrl = enabled) }
             }
         }
         viewModelScope.launch {
@@ -193,6 +201,9 @@ class GlobalSettingsViewModel(
 
     fun setGeckoSafeBrowsing(v: Boolean) =
         viewModelScope.launch { themeManager.setGeckoSafeBrowsing(v) }
+
+    fun setShareWebsiteUrl(enabled: Boolean) =
+        viewModelScope.launch { themeManager.setShareWebsiteUrl(enabled) }
 
     // ── Notifications ─────────────────────────────────────────────────────────
 

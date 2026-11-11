@@ -164,6 +164,7 @@ fun AppNavigation(
             popExitTransition = { fadeOut(animationSpec = tween(NAV_ANIM_DURATION)) },
         ) {
             composable(Screen.Home.route) {
+                val shareWebsiteUrl by app.themeManager.shareWebsiteUrl.collectAsState(initial = true)
                 HomeScreen(
                     viewModel = remember {
                         HomeViewModel(
@@ -182,6 +183,7 @@ fun AppNavigation(
                     onEditApp = { id -> navController.navigate(Screen.Add.createRoute(id)) },
                     onOpenApp = { },
                     onOpenSettings = { id -> navController.navigate(Screen.Settings.createRoute(id)) },
+                    shareWebsiteUrl = shareWebsiteUrl,
                 )
             }
 
@@ -240,6 +242,7 @@ fun AppNavigation(
                             app.geckoEngineManager,
                             app.exportNetworkLogs,
                             app.getNetworkLog,
+                            app.themeManager,
                         )
                     },
                     onBack = { navController.popBackStack() },

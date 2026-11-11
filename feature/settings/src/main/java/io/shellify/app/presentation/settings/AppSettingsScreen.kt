@@ -900,6 +900,8 @@ fun AppSettingsScreen(
                 appName = app.name,
                 appUrl = app.url,
                 onDismiss = { showShareSheet = false },
+                shareWebsiteUrl = state.shareWebsiteUrl,
+                app = app,
             )
         }
 

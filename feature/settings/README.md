@@ -110,13 +110,14 @@ class GlobalSettingsViewModel(
 | Dynamic color | `ThemeManager` → DataStore |
 | Accent color | `ThemeManager` → DataStore |
 | Language (en/fr/ar) | Appearance row opens `LanguagePickerDialog`; `onLanguageChange` writes `ThemeManager` + `LocaleHelper` |
+| Share website URL | `ThemeManager.shareWebsiteUrl` — default ON; when on, `AppShareSheet` copies/shares the saved website URL instead of a Shellify deep link |
 | Backup location + schedule | `BackupManager` |
 | GeckoView install / uninstall | `GeckoEngineManager.install()` / `.uninstall()` |
 | Delete all apps | Data section row (shown when `hasAnyApps`); `TypedConfirmDialog` requires typing `A1B2C3D4` then `DeleteAllAppsUseCase` |
 
 ### `GlobalSettingsScreen`
 
-Sections: **Appearance** (includes Language) | **Data** (Delete all apps, when any apps exist) | **Backup** | **Browser Engine** | **About** (version, licenses link).
+Sections: **Appearance** (includes Language) | **Sharing** (Share website URL, default ON) | **Data** (Delete all apps, when any apps exist) | **Backup** | **Browser Engine** | **About** (version, licenses link).
 
 ### `LicensesScreen`
 

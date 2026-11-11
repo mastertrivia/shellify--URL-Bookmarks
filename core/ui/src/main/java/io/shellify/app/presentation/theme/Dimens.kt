@@ -35,6 +35,7 @@ object Dimens {
     val size5xl: Dp = 36.dp
     val sizeCard: Dp = 40.dp  // icon container box
     val sizeApp: Dp = 48.dp  // app card / shortcut icon
+    val sizeQrCode: Dp = 200.dp  // share-sheet QR code
     val sizeIconPreview: Dp = 52.dp  // add-screen icon preview box
     val sizeEmptyIcon: Dp = 72.dp  // empty-state icon (shortcuts)
     val sizeEmptyIconLg: Dp = 96.dp  // empty-state icon (home)

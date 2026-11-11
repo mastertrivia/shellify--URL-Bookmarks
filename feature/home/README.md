@@ -45,7 +45,7 @@ Top-level Composable wired to `HomeViewModel` via `viewModel()` factory.
 | App grid | `LazyVerticalStaggeredGrid` of `AppCard` composables; icons loaded via `AsyncImage` (Coil) |
 | FAB | Bottom-right; shown when the filtered list is non-empty; calls `navController.navigate("add")` |
 | Empty state | When list is empty and no search active: CTA card that routes to `feature:onboarding` step 4 |
-| Overflow menu | Open in browser, Share, then Clear data / Delete, then Assign category / Settings. Individual Delete requires typing `123`. |
+| Overflow menu | Open in browser, Share, then Clear data / Delete, then Assign category / Settings. Individual Delete requires typing `123`. Share uses `AppShareSheet`; website-URL mode is the default (global Settings toggle). |
 
 ### `WebAppCard`
 

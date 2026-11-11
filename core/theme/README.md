@@ -32,12 +32,14 @@ val themeMode: Flow<ThemeMode>
 val dynamicColor: Flow<Boolean>      // Material You — wallpaper-based colors
 val accentColor: Flow<Color?>        // null = use dynamicColor or default palette
 val selectedLanguage: Flow<String>   // "en" | "fr" | "ar"
+val shareWebsiteUrl: Flow<Boolean>   // default true — share the saved website URL instead of a Shellify link
 
 // Setters — each writes to DataStore and emits on the corresponding Flow
 suspend fun setThemeMode(mode: ThemeMode)
 suspend fun setDynamicColor(enabled: Boolean)
 suspend fun setAccentColor(color: Color?)
 suspend fun setLanguage(languageCode: String)
+suspend fun setShareWebsiteUrl(enabled: Boolean)
 ```
 
 ### Color priority

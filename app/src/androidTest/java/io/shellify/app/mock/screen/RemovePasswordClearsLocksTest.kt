@@ -165,6 +165,7 @@ class RemovePasswordClearsLocksTest {
             every { defaultEngineType } returns flowOf(EngineType.SYSTEM_WEBVIEW)
             every { geckoSafeBrowsing } returns flowOf(false)
             every { globalNotificationsEnabled } returns MutableStateFlow(false)
+            every { shareWebsiteUrl } returns MutableStateFlow(true)
         }
         val backupSettings = mockk<BackupSettings>(relaxed = true) {
             every { enabled } returns flowOf(false)

@@ -184,6 +184,9 @@
     <string name="global_settings_section_data">Données</string>
     <string name="global_settings_delete_all_apps">Supprimer toutes les applications</string>
     <string name="global_settings_delete_all_apps_desc">Supprimer définitivement chaque site enregistré et ses données de navigation</string>
+    <string name="global_settings_section_sharing">Partage</string>
+    <string name="global_settings_share_website_url">Partager l\'URL du site</string>
+    <string name="global_settings_share_website_url_desc">Afficher l\'URL du site enregistré au lieu d\'un lien Shellify lors du partage</string>
     <string name="global_settings_section_appearance">Apparence</string>
     <string name="global_settings_theme_label">Thème</string>
     <string name="global_settings_theme_system">Système</string>

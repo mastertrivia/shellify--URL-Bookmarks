@@ -148,6 +148,7 @@ fun HomeScreen(
     onEditApp: (Long) -> Unit,
     onOpenApp: (WebApp) -> Unit,
     onOpenSettings: (Long) -> Unit,
+    shareWebsiteUrl: Boolean = true,
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -369,6 +370,7 @@ fun HomeScreen(
                             },
                             onClearData = { viewModel.clearData(app) },
                             onDelete = { viewModel.delete(app) },
+                            shareWebsiteUrl = shareWebsiteUrl,
                         )
                     }
                 }
@@ -405,6 +407,7 @@ fun HomeScreen(
                             },
                             onClearData = { viewModel.clearData(app) },
                             onDelete = { viewModel.delete(app) },
+                            shareWebsiteUrl = shareWebsiteUrl,
                         )
                     }
                 }
@@ -648,6 +651,7 @@ private fun AppCard(
     onAssignCategory: (Long?) -> Unit,
     onClearData: () -> Unit,
     onDelete: () -> Unit,
+    shareWebsiteUrl: Boolean = true,
 ) {
     val engineMissing = app.engineType == EngineType.GECKOVIEW && !geckoInstalled
     val context = LocalContext.current
@@ -815,6 +819,8 @@ private fun AppCard(
             appName = app.name,
             appUrl = app.url,
             onDismiss = { showShareSheet = false },
+            shareWebsiteUrl = shareWebsiteUrl,
+            app = app,
         )
     }
 

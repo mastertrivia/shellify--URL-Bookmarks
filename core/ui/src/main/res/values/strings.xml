@@ -224,6 +224,9 @@
     <string name="global_settings_section_data">Data</string>
     <string name="global_settings_delete_all_apps">Delete all apps</string>
     <string name="global_settings_delete_all_apps_desc">Permanently remove every saved website and its browsing data</string>
+    <string name="global_settings_section_sharing">Sharing</string>
+    <string name="global_settings_share_website_url">Share website URL</string>
+    <string name="global_settings_share_website_url_desc">Show the saved website URL instead of a Shellify link when sharing an app</string>
     <string name="global_settings_section_appearance">Appearance</string>
     <string name="global_settings_theme_label">Theme</string>
     <string name="global_settings_theme_system">System</string>

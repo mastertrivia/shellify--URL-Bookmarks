@@ -182,6 +182,18 @@ class SmokeBackupRestoreTest {
     }
 
     @Test
+    fun globalSettings_shareWebsiteUrlToggle_isDisplayedAndOnByDefault() {
+        setScreen(GlobalSettingsUiState(isLoaded = true))
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.global_settings_share_website_url))
+            .performScrollTo()
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(context.getString(CoreUiR.string.global_settings_share_website_url_desc))
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun globalSettings_deleteAllTypedConfirmEnablesOnExactCode() {
         setScreen(GlobalSettingsUiState(isLoaded = true, hasAnyApps = true))
         composeTestRule

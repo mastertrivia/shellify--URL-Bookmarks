@@ -66,6 +66,7 @@ import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Visibility
@@ -414,6 +415,47 @@ fun GlobalSettingsScreen(
                                 languageDisplayName(currentLanguage),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        },
+                    )
+                }
+
+                SectionLabel(stringResource(R.string.global_settings_section_sharing))
+                SurfaceCard {
+                    ListItem(
+                        leadingContent = {
+                            Box(
+                                modifier = Modifier
+                                    .size(Dimens.sizeIconContainer)
+                                    .clip(RoundedCornerShape(Dimens.cornerMd))
+                                    .background(
+                                        MaterialTheme.colorScheme.primaryContainer.copy(
+                                            alpha = 0.4f
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    Icons.Default.Share,
+                                    null,
+                                    modifier = Modifier.size(Dimens.sizeMd),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                        headlineContent = {
+                            Text(
+                                stringResource(R.string.global_settings_share_website_url),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
+                        supportingContent = {
+                            Text(stringResource(R.string.global_settings_share_website_url_desc))
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = state.shareWebsiteUrl,
+                                onCheckedChange = viewModel::setShareWebsiteUrl
                             )
                         },
                     )
